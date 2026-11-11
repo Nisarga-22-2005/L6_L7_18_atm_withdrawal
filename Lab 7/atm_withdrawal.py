@@ -1,13 +1,41 @@
 def notes_needed(amount):
-    return int(amount.replace(',', '')) // 100
+    try:
+        if amount is None:
+            return 0
+        amount = int(amount.replace(',', ''))
+        if amount < 0:
+            return 0
+        return amount // 100
+    except (ValueError, AttributeError):
+        return 0
+
 
 def mask_card(card_number):
+    if not isinstance(card_number, str):
+        return "Invalid card number"
+
     groups = card_number.split()
+
+    if len(groups) != 4 or not all(group.isdigit() for group in groups):
+        return "Invalid card number"
+
     return "XXXX XXXX XXXX " + groups[3]
 
+
 def average_withdrawal(amounts_csv):
-    amounts = [int(a) for a in amounts_csv.split(',')]
-    return sum(amounts) // len(amounts)
+    try:
+        if not isinstance(amounts_csv, str) or not amounts_csv.strip():
+            return 0
+
+        amounts = [int(a.strip()) for a in amounts_csv.split(',')]
+
+        if not amounts or any(a < 0 for a in amounts):
+            return 0
+
+        return sum(amounts) // len(amounts)
+    except ValueError:
+        return 0
+
 
 def main():
     print("==== Running notes_needed ====")
@@ -24,6 +52,7 @@ def main():
     user_input = input("Enter withdrawals as CSV (e.g. 500,1000,2000): ")
     result = average_withdrawal(user_input)
     print("Average Withdrawal:", result)
+
 
 if __name__ == "__main__":
     main()
